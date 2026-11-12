@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+
+:root{
+    --primary:#0f4c81;
+    --secondary:#1f7ae0;
+    --success:#00b894;
+    --card:#ffffff;
+    --text:#1f2937;
+    --shadow:0 15px 35px rgba(0,0,0,.15);
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+    background:
+        radial-gradient(circle at top left,#1e3c72 0%,transparent 40%),
+        radial-gradient(circle at bottom right,#2a5298 0%,transparent 40%),
+        linear-gradient(135deg,#0f172a,#1e293b,#0f4c81);
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    backdrop-filter:blur(8px);
+    z-index:-1;
+}
+
+.dashboard{
+    width:100%;
+    max-width:1250px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:30px;
+    padding:40px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+    backdrop-filter:blur(18px);
+}
+
+.header{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.header h1{
+    color:#fff;
+    font-size:2.4rem;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.header p{
+    color:rgba(255,255,255,.85);
+    margin-top:10px;
+    font-size:16px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:28px;
+}
+
+.card{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+    color:var(--text);
+    background:rgba(255,255,255,.95);
+    border-radius:22px;
+    padding:35px 25px;
+    min-height:220px;
+    transition:.35s;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    width:180%;
+    height:180%;
+    background:linear-gradient(135deg,#ffffff20,#ffffff00);
+    top:-100%;
+    left:-100%;
+    transform:rotate(25deg);
+    transition:.6s;
+}
+
+.card:hover::before{
+    top:100%;
+    left:100%;
+}
+
+.card:hover{
+    transform:translateY(-12px) scale(1.03);
+    box-shadow:0 25px 45px rgba(0,0,0,.25);
+}
+
+.icon{
+    width:85px;
+    height:85px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+    font-size:34px;
+    margin-bottom:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+.card h2{
+    font-size:20px;
+    text-align:center;
+    margin-bottom:12px;
+    font-weight:700;
+}
+
+.card p{
+    text-align:center;
+    font-size:14px;
+    color:#666;
+    line-height:1.6;
+}
+
+.card:nth-child(1) .icon{
+    background:linear-gradient(135deg,#00c853,#43a047);
+}
+
+.card:nth-child(2) .icon{
+    background:linear-gradient(135deg,#ff9800,#ff5722);
+}
+
+.card:nth-child(3) .icon{
+    background:linear-gradient(135deg,#2979ff,#00b0ff);
+}
+
+.card:nth-child(4) .icon{
+    background:linear-gradient(135deg,#9c27b0,#673ab7);
+}
+
+.card:nth-child(5) .icon{
+    background:linear-gradient(135deg,#f44336,#e91e63);
+}
+
+.card:nth-child(6) .icon{
+    background:linear-gradient(135deg,#009688,#00c853);
+}
+
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:rgba(255,255,255,.85);
+    font-size:15px;
+}
+
+@media(max-width:900px){
+
+.dashboard{
+    padding:30px 20px;
+}
+
+.header h1{
+    font-size:2rem;
+}
+
+.grid{
+    gap:20px;
+}
+
+.card{
+    min-height:200px;
+}
+
+}
+
+@media(max-width:600px){
+
+body{
+    padding:20px 12px;
+}
+
+.dashboard{
+    border-radius:20px;
+    padding:20px 15px;
+}
+
+.header{
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:1.7rem;
+}
+
+.header p{
+    font-size:14px;
+}
+
+.grid{
+    grid-template-columns:1fr;
+}
+
+.card{
+    min-height:180px;
+    padding:25px;
+}
+
+.icon{
+    width:70px;
+    height:70px;
+    font-size:28px;
+}
+
+.card h2{
+    font-size:18px;
+}
+
+.card p{
+    font-size:13px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<div class="header">
+<h1><i class="fa-solid fa-user-shield"></i> Admin Control Panel</h1>
+<p>Manage users, transactions, redirects, balances and system settings from one place.</p>
+</div>
+
+<div class="grid">
+
+<a href="gsdbvfyhfravcnbdhyred.html" class="card">
+<div class="icon">
+<i class="fas fa-wallet"></i>
+</div>
+<h2>Add Amount</h2>
+<p>Credit users, manage balances and update wallet amounts.</p>
+</a>
+
+<a href="admin-popup-editor.html" class="card">
+<div class="icon">
+<i class="fas fa-pen-to-square"></i>
+</div>
+<h2>Popup Editor</h2>
+<p>Create and edit homepage popup announcements and notifications.</p>
+</a>
+
+<a href="admin-redirect.html" class="card">
+<div class="icon">
+<i class="fas fa-right-to-bracket"></i>
+</div>
+<h2>Login Redirect</h2>
+<p>Configure where users are redirected immediately after login.</p>
+</a>
+
+<a href="admin2hfresbvcreajmne.html" class="card">
+<div class="icon">
+<i class="fas fa-money-check-dollar"></i>
+</div>
+<h2>Transactions</h2>
+<p>Monitor deposits, withdrawals and transaction history.</p>
+</a>
+
+<a href="admin4.html" class="card">
+<div class="icon">
+<i class="fas fa-user-plus"></i>
+</div>
+<h2>Create User</h2>
+<p>Create new users and assign roles with secure account details.</p>
+</a>
+
+<a href="admin5.html" class="card">
+<div class="icon">
+<i class="fas fa-user-gear"></i>
+</div>
+<h2>Edit User</h2>
+<p>Update user profiles, passwords, permissions and account information.</p>
+</a>
+
+</div>
+
+<div class="footer">
+© 2026 Admin Dashboard • Secure Management System
+</div>
+
+</div>
+
+</body>
+</html>

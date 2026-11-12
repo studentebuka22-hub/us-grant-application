@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Create User</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+:root{
+--primary:#15317E;
+--primary2:#2558d9;
+--success:#16a34a;
+--danger:#dc2626;
+--bg:#eef3fb;
+--card:#ffffff;
+--border:#dbe4f0;
+--text:#1f2937;
+}
+
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:30px;
+background:linear-gradient(135deg,#edf4ff,#f7fbff,#edf2fa);
+color:var(--text);
+}
+
+.container{
+width:100%;
+max-width:560px;
+background:var(--card);
+padding:35px;
+border-radius:22px;
+box-shadow:0 20px 50px rgba(0,0,0,.08);
+border:1px solid rgba(255,255,255,.8);
+animation:fadeIn .35s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+h2{
+text-align:center;
+font-size:30px;
+font-weight:800;
+margin-bottom:28px;
+color:var(--primary);
+}
+
+input{
+width:100%;
+height:55px;
+padding:0 18px;
+margin-bottom:18px;
+border:2px solid var(--border);
+border-radius:14px;
+font-size:15px;
+outline:none;
+transition:.3s;
+background:#fff;
+}
+
+input::placeholder{
+color:#94a3b8;
+}
+
+input:focus{
+border-color:var(--primary);
+box-shadow:0 0 0 5px rgba(21,49,126,.12);
+}
+
+button{
+width:100%;
+height:56px;
+margin-top:10px;
+border:none;
+border-radius:14px;
+background:linear-gradient(135deg,var(--primary),var(--primary2));
+color:#fff;
+font-size:16px;
+font-weight:700;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 12px 25px rgba(21,49,126,.25);
+}
+
+button:active{
+transform:scale(.98);
+}
+
+input[type="date"]{
+cursor:pointer;
+}
+
+@media(max-width:768px){
+
+body{
+padding:18px;
+align-items:flex-start;
+}
+
+.container{
+padding:25px;
+border-radius:18px;
+}
+
+h2{
+font-size:24px;
+}
+
+input{
+height:52px;
+font-size:14px;
+}
+
+button{
+height:52px;
+font-size:15px;
+}
+
+}
+
+@media(max-width:480px){
+
+body{
+padding:12px;
+}
+
+.container{
+padding:18px;
+border-radius:16px;
+}
+
+h2{
+font-size:21px;
+margin-bottom:20px;
+}
+
+input{
+height:48px;
+padding:0 14px;
+margin-bottom:14px;
+}
+
+button{
+height:48px;
+font-size:14px;
+}
+
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Create New User</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password (min 6 characters)" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <input type="text" id="address" placeholder="Address" />
+    <input type="text" id="ein" placeholder="EIN Number" />
+    <input type="text" id="business" placeholder="Business Name" />
+    <input type="date" id="dob" placeholder="Date of Birth" />
+    <button onclick="createUser()">Create User</button>
+  </div>
+
+  <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+  authDomain: "scores-b25a7.firebaseapp.com",
+  databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+  projectId: "scores-b25a7",
+  storageBucket: "scores-b25a7.appspot.com",
+  messagingSenderId: "1001957936318",
+  appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef",
+  measurementId: "G-7FC8Q029F2"
+};
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    function createUser() {
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const ein = document.getElementById("ein").value;
+      const business = document.getElementById("business").value;
+      const dob = document.getElementById("dob").value;
+
+      if (!email || !password || password.length < 6) {
+        alert("Please enter a valid email and a password with at least 6 characters.");
+        return;
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          return firebase.database().ref("users/" + uid).set({
+            username,
+            email,
+            phone,
+            address,
+            ein,
+            business,
+            date_of_birth: dob
+          });
+        })
+        .then(() => {
+          alert("User account created successfully!");
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>

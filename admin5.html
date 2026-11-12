@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin - Create User</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+/* ---------- ADD THIS INSIDE THE SECOND CONTAINER (ABOVE <ul id="users-list"></ul>) ---------- */
+
+<input type="text" id="searchUser" placeholder="🔍 Search by username, email, phone or business..." onkeyup="filterUsers()">
+
+
+/* ---------- REPLACE YOUR ENTIRE CSS WITH THIS ---------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+:root{
+--primary:#15317E;
+--primary2:#2D5DD7;
+--success:#22c55e;
+--danger:#ef4444;
+--warning:#f59e0b;
+--border:#d9e5f3;
+--text:#1f2937;
+}
+
+body{
+background:linear-gradient(135deg,#edf4ff,#f8fbff,#eef4fb);
+padding:30px;
+color:var(--text);
+}
+
+.container{
+width:100%;
+max-width:1100px;
+margin:auto;
+margin-bottom:30px;
+background:#fff;
+padding:30px;
+border-radius:22px;
+box-shadow:0 20px 45px rgba(0,0,0,.08);
+}
+
+h2{
+font-size:30px;
+font-weight:800;
+text-align:center;
+color:var(--primary);
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+height:54px;
+padding:0 18px;
+margin-bottom:15px;
+border-radius:14px;
+border:2px solid var(--border);
+font-size:15px;
+outline:none;
+transition:.3s;
+}
+
+input:focus{
+border-color:var(--primary);
+box-shadow:0 0 0 5px rgba(21,49,126,.12);
+}
+
+button{
+border:none;
+border-radius:12px;
+padding:12px 18px;
+cursor:pointer;
+font-weight:700;
+font-size:14px;
+transition:.3s;
+}
+
+#submit-btn{
+width:100%;
+background:linear-gradient(135deg,#16a34a,#22c55e);
+color:#fff;
+margin-bottom:10px;
+}
+
+#update-btn{
+width:100%;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+color:#fff;
+margin-bottom:10px;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+#searchUser{
+margin-bottom:25px;
+}
+
+#users-list{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:20px;
+list-style:none;
+padding:0;
+}
+
+#users-list li{
+background:#fff;
+border-radius:18px;
+padding:20px;
+border:1px solid #e5edf8;
+box-shadow:0 12px 28px rgba(0,0,0,.07);
+transition:.3s;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+#users-list li:hover{
+transform:translateY(-4px);
+}
+
+.userName{
+font-size:19px;
+font-weight:700;
+color:#15317E;
+}
+
+.userEmail{
+font-size:14px;
+color:#64748b;
+word-break:break-word;
+}
+
+.userActions{
+display:flex;
+gap:10px;
+margin-top:8px;
+}
+
+.userActions button{
+flex:1;
+color:#fff;
+}
+
+.userActions button:first-child{
+background:#2563eb;
+}
+
+.userActions button:last-child{
+background:#ef4444;
+}
+
+.error-message{
+color:#ef4444;
+}
+
+.success-message{
+color:#16a34a;
+}
+
+@media(max-width:768px){
+
+body{
+padding:18px;
+}
+
+.container{
+padding:20px;
+}
+
+h2{
+font-size:24px;
+}
+
+#users-list{
+grid-template-columns:1fr;
+}
+
+.userActions{
+flex-direction:column;
+}
+
+.userActions button{
+width:100%;
+}
+
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="form-title">Create New User</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password (min 6 characters)" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <input type="text" id="address" placeholder="Address" />
+    <input type="text" id="ein" placeholder="EIN Number" />
+    <input type="text" id="business" placeholder="Business Name" />
+    <input type="date" id="dob" placeholder="Date of Birth" />
+    <input type="hidden" id="uid" />
+    <button id="submit-btn" onclick="createUser()">Create User</button>
+    <button id="update-btn" onclick="updateUser()" style="display: none;">Update User</button>
+  </div>
+
+  <div class="container">
+    <h2>Users List</h2>
+    <ul id="users-list"></ul>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+      authDomain: "scores-b25a7.firebaseapp.com",
+      databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+      projectId: "scores-b25a7",
+      storageBucket: "scores-b25a7.appspot.com",
+      messagingSenderId: "1001957936318",
+      appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef",
+      measurementId: "G-7FC8Q029F2"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    function createUser() {
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const ein = document.getElementById("ein").value;
+      const business = document.getElementById("business").value;
+      const dob = document.getElementById("dob").value;
+
+      if (!email || !password || password.length < 6) {
+        alert("Please enter a valid email and a password with at least 6 characters.");
+        return;
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          return firebase.database().ref("users/" + uid).set({
+            username,
+            email,
+            phone,
+            address,
+            ein,
+            business,
+            date_of_birth: dob
+          });
+        })
+        .then(() => {
+          alert("User account created successfully!");
+          clearForm();
+          loadUsers();
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+          console.error(error);
+        });
+    }
+
+    function updateUser() {
+      const uid = document.getElementById("uid").value;
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const ein = document.getElementById("ein").value;
+      const business = document.getElementById("business").value;
+      const dob = document.getElementById("dob").value;
+
+      firebase.database().ref("users/" + uid).update({
+        username,
+        email,
+        phone,
+        address,
+        ein,
+        business,
+        date_of_birth: dob
+      })
+        .then(() => {
+          alert("User account updated successfully!");
+          clearForm();
+          loadUsers();
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+          console.error(error);
+        });
+    }
+
+function loadUsers() {
+  const usersList = document.getElementById("users-list");
+  usersList.innerHTML = "";
+
+  firebase.database().ref("users").once("value")
+    .then((snapshot) => {
+
+      snapshot.forEach((childSnapshot) => {
+
+        const user = childSnapshot.val();
+        const uid = childSnapshot.key;
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+
+          <div class="userName">
+            ${user.username || "No Name"}
+          </div>
+
+          <div class="userEmail">
+            ${user.email || ""}
+          </div>
+
+          <div>
+            📞 <strong>Phone:</strong> ${user.phone || "-"}
+          </div>
+
+          <div>
+            🏢 <strong>Business:</strong> ${user.business || "-"}
+          </div>
+
+          <div>
+            🪪 <strong>EIN:</strong> ${user.ein || "-"}
+          </div>
+
+          <div>
+            📍 <strong>Address:</strong> ${user.address || "-"}
+          </div>
+
+          <div>
+            🎂 <strong>DOB:</strong> ${user.date_of_birth || "-"}
+          </div>
+
+          <div>
+            🔑 <strong>UID:</strong><br>${uid}
+          </div>
+
+          <div class="userActions">
+            <button onclick="editUser('${uid}')">
+              Edit
+            </button>
+
+            <button onclick="deleteUser('${uid}')">
+              Delete
+            </button>
+          </div>
+
+        `;
+
+        usersList.appendChild(li);
+
+      });
+
+      filterUsers();
+
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+function filterUsers() {
+
+  const input = document.getElementById("searchUser").value.toLowerCase();
+
+  const cards = document.querySelectorAll("#users-list li");
+
+  cards.forEach(card => {
+
+    const text = card.innerText.toLowerCase();
+
+    card.style.display = text.includes(input) ? "flex" : "none";
+
+  });
+
+}
+
+    function editUser(uid) {
+      firebase.database().ref("users/" + uid).once("value")
+        .then((snapshot) => {
+          const user = snapshot.val();
+          document.getElementById("uid").value = uid;
+          document.getElementById("username").value = user.username;
+          document.getElementById("email").value = user.email;
+          document.getElementById("phone").value = user.phone;
+          document.getElementById("address").value = user.address;
+          document.getElementById("ein").value = user.ein;
+          document.getElementById("business").value = user.business;
+          document.getElementById("dob").value = user.date_of_birth;
+
+          document.getElementById("form-title").innerText = "Edit User";
+          document.getElementById("submit-btn").style.display = "none";
+          document.getElementById("update-btn").style.display = "block";
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+    function deleteUser(uid) {
+      firebase.database().ref("users/" + uid).remove()
+        .then(() => {
+          alert("User account deleted successfully!");
+          loadUsers();
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+          console.error(error);
+        });
+    }
+
+    function clearForm() {
+      document.getElementById("uid").value = "";
+      document.getElementById("username").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("phone").value = "";
+      document.getElementById("address").value = "";
+      document.getElementById("ein").value = "";
+      document.getElementById("business").value = "";
+      document.getElementById("dob").value = "";
+
+      document.getElementById("form-title").innerText = "Create New User";
+      document.getElementById("submit-btn").style.display = "block";
+      document.getElementById("update-btn").style.display = "none";
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

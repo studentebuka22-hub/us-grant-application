@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Redirect Setup</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+:root{
+--primary:#15317E;
+--primary2:#2F5EE5;
+--border:#dce5f3;
+--text:#1f2937;
+}
+
+body{
+background:linear-gradient(135deg,#edf4ff,#f8fbff,#eef3fb);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:25px;
+color:var(--text);
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at top right,rgba(47,94,229,.12),transparent 45%),
+radial-gradient(circle at bottom left,rgba(21,49,126,.08),transparent 45%);
+pointer-events:none;
+z-index:-1;
+}
+
+body{
+flex-direction:column;
+}
+
+h2{
+width:100%;
+max-width:700px;
+background:#fff;
+padding:28px 35px;
+border-radius:24px 24px 0 0;
+text-align:center;
+font-size:30px;
+font-weight:800;
+color:#15317E;
+box-shadow:0 15px 40px rgba(0,0,0,.08);
+margin-bottom:0;
+}
+
+label{
+width:100%;
+max-width:700px;
+background:#fff;
+padding:0 35px;
+display:block;
+font-size:15px;
+font-weight:700;
+color:#334155;
+}
+
+label:first-of-type{
+padding-top:30px;
+}
+
+select,
+input{
+display:block;
+width:100%;
+max-width:630px;
+margin:10px auto 22px;
+height:56px;
+padding:0 18px;
+border-radius:15px;
+border:2px solid var(--border);
+background:#fff;
+font-size:15px;
+outline:none;
+transition:.3s;
+}
+
+select{
+cursor:pointer;
+}
+
+select:focus,
+input:focus{
+border-color:#15317E;
+box-shadow:0 0 0 5px rgba(21,49,126,.12);
+}
+
+button{
+display:block;
+width:100%;
+max-width:630px;
+margin:0 auto 30px;
+height:56px;
+border:none;
+border-radius:15px;
+background:linear-gradient(135deg,#15317E,#2F5EE5);
+color:#fff;
+font-size:16px;
+font-weight:700;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 14px 30px rgba(21,49,126,.20);
+}
+
+button:active{
+transform:scale(.98);
+}
+
+br{
+display:none;
+}
+
+button::after{
+content:"";
+display:block;
+}
+
+button{
+border-bottom-left-radius:20px;
+border-bottom-right-radius:20px;
+}
+
+button,
+label:last-of-type{
+box-shadow:0 20px 45px rgba(0,0,0,.08);
+}
+
+@media(max-width:768px){
+
+body{
+padding:15px;
+}
+
+h2{
+font-size:24px;
+padding:22px;
+border-radius:18px 18px 0 0;
+}
+
+label{
+padding:0 22px;
+font-size:14px;
+}
+
+select,
+input,
+button{
+max-width:calc(100% - 44px);
+}
+
+select,
+input{
+height:52px;
+font-size:14px;
+}
+
+button{
+height:50px;
+font-size:14px;
+margin-bottom:22px;
+}
+
+}
+
+@media(max-width:480px){
+
+body{
+padding:10px;
+}
+
+h2{
+font-size:21px;
+padding:18px;
+}
+
+label{
+padding:0 16px;
+}
+
+select,
+input,
+button{
+max-width:calc(100% - 32px);
+}
+
+select,
+input{
+height:48px;
+}
+
+button{
+height:48px;
+}
+
+}
+</style>
+</head>
+<body>
+  <h2>Admin: Set Redirect Page for Users</h2>
+
+  <label for="userSelect">Select User:</label>
+  <select id="userSelect">
+    <option>Loading users...</option>
+  </select><br><br>
+
+  <label for="redirectUrl">Redirect Page (e.g., user1page.html):</label><br>
+  <input type="text" id="redirectUrl" placeholder="Enter page URL"><br><br>
+
+  <button onclick="setRedirect()">Save Redirect</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+      authDomain: "scores-b25a7.firebaseapp.com",
+      databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+      projectId: "scores-b25a7",
+      storageBucket: "scores-b25a7.appspot.com",
+      messagingSenderId: "1001957936318",
+      appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Fetch all users from database for dropdown
+    loadUsers();
+
+    function loadUsers() {
+      const userSelect = document.getElementById("userSelect");
+      userSelect.innerHTML = '<option>Loading...</option>';
+
+      // This assumes user emails are stored under /users with UID as key
+      firebase.database().ref("users").once("value", (snapshot) => {
+        const users = snapshot.val();
+        userSelect.innerHTML = '';
+        for (let uid in users) {
+          const email = users[uid].email || uid;
+          const option = document.createElement("option");
+          option.value = uid;
+          option.textContent = email;
+          userSelect.appendChild(option);
+        }
+      });
+    }
+
+    function setRedirect() {
+      const selectedUID = document.getElementById("userSelect").value;
+      const redirectPage = document.getElementById("redirectUrl").value;
+
+      if (!redirectPage) {
+        alert("Please enter a redirect page");
+        return;
+      }
+
+      firebase.database().ref("userRedirects/" + selectedUID).set(redirectPage)
+        .then(() => {
+          alert("Redirect page set successfully!");
+        })
+        .catch((error) => {
+          alert("Error setting redirect: " + error.message);
+        });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Approved Amount Manager</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:#edf3fb;
+padding:25px;
+color:#222;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:15px;
+margin-bottom:25px;
+}
+
+.header h1{
+font-size:32px;
+color:#143a85;
+font-weight:800;
+}
+
+.summary{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin-bottom:25px;
+}
+
+.card{
+flex:1;
+min-width:220px;
+background:white;
+padding:22px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.card h3{
+font-size:15px;
+color:#666;
+margin-bottom:10px;
+}
+
+.card span{
+font-size:30px;
+font-weight:800;
+color:#143a85;
+}
+
+.toolbar{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin-bottom:25px;
+}
+
+.toolbar input{
+flex:1;
+min-width:250px;
+padding:15px;
+border:2px solid #dce4f2;
+border-radius:12px;
+font-size:15px;
+outline:none;
+}
+
+.toolbar input:focus{
+border-color:#143a85;
+}
+
+.table-box{
+background:white;
+border-radius:20px;
+overflow:auto;
+box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+min-width:1200px;
+}
+
+thead{
+background:#143a85;
+}
+
+th{
+padding:18px;
+color:white;
+font-size:14px;
+text-align:left;
+}
+
+td{
+padding:16px;
+border-bottom:1px solid #edf2f8;
+vertical-align:middle;
+}
+
+tbody tr:hover{
+background:#f8fbff;
+}
+
+.amountBadge{
+
+display:inline-block;
+
+padding:10px 18px;
+
+background:#e7f7ec;
+
+color:#0b8c41;
+
+font-weight:700;
+
+border-radius:30px;
+
+}
+
+.amountInput{
+
+width:170px;
+
+padding:12px;
+
+border:2px solid #dce4f2;
+
+border-radius:10px;
+
+outline:none;
+
+}
+
+.amountInput:focus{
+
+border-color:#143a85;
+
+}
+
+.updateBtn{
+
+padding:12px 20px;
+
+border:none;
+
+border-radius:10px;
+
+background:#143a85;
+
+color:white;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.updateBtn:hover{
+
+background:#0d2b68;
+
+}
+
+.loading{
+
+padding:50px;
+
+text-align:center;
+
+font-size:18px;
+
+font-weight:700;
+
+color:#143a85;
+
+}
+
+@media(max-width:768px){
+
+body{
+
+padding:15px;
+
+}
+
+.header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+}
+
+.header h1{
+
+font-size:26px;
+
+}
+
+.summary{
+
+flex-direction:column;
+
+}
+
+.card{
+
+width:100%;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<h1>Approved Amount Management</h1>
+
+</div>
+
+<div class="summary">
+
+<div class="card">
+
+<h3>Total Users</h3>
+
+<span id="totalUsers">0</span>
+
+</div>
+
+<div class="card">
+
+<h3>Total Approved Amount</h3>
+
+<span id="totalApproved">$0</span>
+
+</div>
+
+</div>
+
+<div class="toolbar">
+
+<input
+type="text"
+id="searchBox"
+placeholder="Search by name, email or business...">
+
+</div>
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>Email</th>
+
+<th>Phone</th>
+
+<th>Business</th>
+
+<th>Current Approved Amount</th>
+
+<th>New Amount</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="userTable">
+
+<tr>
+
+<td colspan="7" class="loading">
+
+Loading users...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+
+authDomain: "scores-b25a7.firebaseapp.com",
+
+databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+
+projectId: "scores-b25a7",
+
+storageBucket: "scores-b25a7.appspot.com",
+
+messagingSenderId: "1001957936318",
+
+appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+const table = document.getElementById("userTable");
+
+const totalUsers = document.getElementById("totalUsers");
+
+const totalApproved = document.getElementById("totalApproved");
+
+const searchBox = document.getElementById("searchBox");
+
+let users = [];
+
+db.ref("users").on("value", snapshot=>{
+
+users=[];
+
+snapshot.forEach(child=>{
+
+users.push({
+
+uid:child.key,
+
+...child.val()
+
+});
+
+});
+
+renderUsers(users);
+
+});
+
+function renderUsers(list){
+
+table.innerHTML="";
+
+let totalAmount=0;
+
+totalUsers.innerHTML=list.length;
+
+if(list.length===0){
+
+table.innerHTML=`
+
+<tr>
+
+<td colspan="7" class="loading">
+
+No users found.
+
+</td>
+
+</tr>
+
+`;
+
+totalApproved.innerHTML="$0";
+
+return;
+
+}
+
+list.forEach(user=>{
+
+const amount=Number(user.approvedAmount||0);
+
+totalAmount+=amount;
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>${user.username||""}</td>
+
+<td>${user.email||""}</td>
+
+<td>${user.phone||""}</td>
+
+<td>${user.business||""}</td>
+
+<td>
+
+<span class="amountBadge">
+
+$${amount.toLocaleString()}
+
+</span>
+
+</td>
+
+<td>
+
+<input
+
+class="amountInput"
+
+type="number"
+
+id="amount_${user.uid}"
+
+placeholder="Enter amount"
+
+value="${amount}">
+
+</td>
+
+<td>
+
+<button
+
+class="updateBtn"
+
+onclick="updateAmount('${user.uid}')">
+
+Update
+
+</button>
+
+</td>
+
+`;
+
+table.appendChild(tr);
+
+});
+
+totalApproved.innerHTML="$"+totalAmount.toLocaleString();
+
+}
+
+function updateAmount(uid){
+
+const input=document.getElementById("amount_"+uid);
+
+const amount=Number(input.value);
+
+if(isNaN(amount)||amount<0){
+
+alert("Please enter a valid amount.");
+
+return;
+
+}
+
+db.ref("users/"+uid).update({
+
+approvedAmount:amount
+
+})
+
+.then(()=>{
+
+alert("Approved amount updated successfully.");
+
+})
+
+.catch(error=>{
+
+alert(error.message);
+
+});
+
+}
+
+searchBox.addEventListener("keyup",function(){
+
+const keyword=this.value.toLowerCase();
+
+const filtered=users.filter(user=>{
+
+return(
+
+(user.username||"").toLowerCase().includes(keyword)||
+
+(user.email||"").toLowerCase().includes(keyword)||
+
+(user.business||"").toLowerCase().includes(keyword)||
+
+(user.phone||"").toLowerCase().includes(keyword)
+
+);
+
+});
+
+renderUsers(filtered);
+
+});
+
+</script>
+
+</body>
+</html>

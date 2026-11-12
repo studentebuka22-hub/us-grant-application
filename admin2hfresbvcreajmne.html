@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<title>Transaction Management Center</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+
+:root{
+
+--primary:#15317E;
+--secondary:#2F5EE5;
+--success:#16a34a;
+--warning:#f59e0b;
+--danger:#dc2626;
+
+--background:#edf4ff;
+--card:#ffffff;
+--border:#d9e6f8;
+
+--text:#1e293b;
+--muted:#64748b;
+
+--shadow:
+0 20px 50px rgba(15,23,42,.08);
+
+--shadow-hover:
+0 25px 60px rgba(15,23,42,.15);
+
+}
+
+
+body{
+
+min-height:100vh;
+
+padding:40px;
+
+background:
+
+linear-gradient(
+135deg,
+#edf4ff,
+#f9fbff,
+#eef5ff
+);
+
+color:var(--text);
+
+}
+
+
+body::before{
+
+content:"";
+
+position:fixed;
+
+inset:0;
+
+background:
+
+radial-gradient(
+circle at top right,
+rgba(47,94,229,.12),
+transparent 40%
+),
+
+radial-gradient(
+circle at bottom left,
+rgba(21,49,126,.10),
+transparent 45%
+);
+
+pointer-events:none;
+
+z-index:-1;
+
+}
+
+
+/* MAIN CONTAINER */
+
+.page-container{
+
+max-width:1250px;
+
+margin:auto;
+
+}
+
+
+/* HEADER */
+
+
+.page-header{
+
+background:
+
+linear-gradient(
+135deg,
+#15317E,
+#224db8,
+#2F5EE5
+);
+
+border-radius:30px 30px 0 0;
+
+padding:40px;
+
+color:white;
+
+position:relative;
+
+overflow:hidden;
+
+box-shadow:var(--shadow);
+
+}
+
+
+.page-header::after{
+
+content:"";
+
+position:absolute;
+
+width:260px;
+
+height:260px;
+
+border-radius:50%;
+
+right:-80px;
+
+top:-100px;
+
+background:
+rgba(255,255,255,.08);
+
+}
+
+
+.page-header h1{
+
+font-size:36px;
+
+font-weight:900;
+
+position:relative;
+
+z-index:1;
+
+}
+
+
+.page-header p{
+
+margin-top:12px;
+
+max-width:700px;
+
+line-height:1.8;
+
+font-size:15px;
+
+opacity:.95;
+
+position:relative;
+
+z-index:1;
+
+}
+
+
+
+/* CONTENT */
+
+
+.main-card{
+
+background:white;
+
+padding:35px;
+
+border-radius:0 0 30px 30px;
+
+box-shadow:var(--shadow);
+
+border:1px solid rgba(255,255,255,.8);
+
+}
+
+
+/* USER SECTION */
+
+
+.user-panel{
+
+background:#f8fbff;
+
+border:1px solid var(--border);
+
+border-radius:24px;
+
+padding:25px;
+
+margin-bottom:30px;
+
+}
+
+
+.section-title{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+font-size:20px;
+
+font-weight:800;
+
+color:var(--primary);
+
+margin-bottom:22px;
+
+}
+
+
+.section-icon{
+
+width:45px;
+
+height:45px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:14px;
+
+background:
+
+linear-gradient(
+135deg,
+var(--primary),
+var(--secondary)
+);
+
+color:white;
+
+font-size:20px;
+
+}
+
+
+
+.form-group{
+
+margin-bottom:20px;
+
+}
+
+
+
+.form-group label{
+
+display:block;
+
+font-size:14px;
+
+font-weight:700;
+
+margin-bottom:9px;
+
+color:#334155;
+
+}
+
+
+
+select,
+input{
+
+width:100%;
+
+height:56px;
+
+padding:0 18px;
+
+border-radius:15px;
+
+border:2px solid var(--border);
+
+background:white;
+
+font-size:15px;
+
+outline:none;
+
+transition:.3s;
+
+}
+
+
+
+select:hover,
+input:hover{
+
+border-color:#bcd2f7;
+
+}
+
+
+
+select:focus,
+input:focus{
+
+border-color:var(--secondary);
+
+box-shadow:
+
+0 0 0 5px rgba(47,94,229,.12);
+
+}
+
+
+
+/* TRANSACTION FORM */
+
+
+#createTransactionForm{
+
+background:white;
+
+border:1px solid var(--border);
+
+border-radius:24px;
+
+padding:30px;
+
+}
+
+
+
+.form-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:25px;
+
+}
+
+
+
+.form-header h2{
+
+font-size:24px;
+
+font-weight:800;
+
+color:var(--primary);
+
+}
+
+
+
+.badge{
+
+background:#edf4ff;
+
+color:var(--primary);
+
+padding:8px 15px;
+
+border-radius:50px;
+
+font-size:13px;
+
+font-weight:700;
+
+}
+
+
+
+button{
+
+height:55px;
+
+padding:0 30px;
+
+border:none;
+
+border-radius:15px;
+
+cursor:pointer;
+
+background:
+
+linear-gradient(
+135deg,
+var(--primary),
+var(--secondary)
+);
+
+color:white;
+
+font-weight:800;
+
+font-size:15px;
+
+transition:.3s;
+
+}
+
+
+
+button:hover{
+
+transform:translateY(-3px);
+
+box-shadow:var(--shadow-hover);
+
+}
+
+
+
+.message{
+
+display:block;
+
+margin-top:20px;
+
+padding:16px;
+
+border-radius:15px;
+
+background:#ecfdf5;
+
+color:#15803d;
+
+border-left:5px solid var(--success);
+
+font-weight:700;
+
+}
+
+
+
+.error-message{
+
+display:block;
+
+margin-top:20px;
+
+padding:16px;
+
+border-radius:15px;
+
+background:#fef2f2;
+
+color:#dc2626;
+
+border-left:5px solid var(--danger);
+
+font-weight:700;
+
+}
+
+
+
+/* TABLE */
+
+
+.history-section{
+
+margin-top:35px;
+
+}
+
+
+
+.history-title{
+
+font-size:28px;
+
+font-weight:900;
+
+color:var(--primary);
+
+margin-bottom:20px;
+
+}
+
+
+
+.table-container{
+
+overflow-x:auto;
+
+border-radius:22px;
+
+box-shadow:var(--shadow);
+
+}
+
+
+
+.transaction-table{
+
+width:100%;
+
+border-collapse:collapse;
+
+background:white;
+
+min-width:850px;
+
+}
+
+
+
+.transaction-table th{
+
+padding:18px;
+
+background:
+
+linear-gradient(
+135deg,
+var(--primary),
+var(--secondary)
+);
+
+color:white;
+
+font-size:14px;
+
+text-align:left;
+
+}
+
+
+
+.transaction-table td{
+
+padding:16px;
+
+border-bottom:1px solid #edf2f7;
+
+font-size:14px;
+
+}
+
+
+
+.transaction-table tr:hover{
+
+background:#f8fbff;
+
+}
+
+
+
+.action-buttons{
+
+display:flex;
+
+gap:10px;
+
+}
+
+
+
+.action-buttons button{
+
+height:40px;
+
+padding:0 18px;
+
+font-size:13px;
+
+}
+
+
+
+.action-buttons .edit{
+
+background:
+
+linear-gradient(
+135deg,
+#f59e0b,
+#fb923c
+);
+
+}
+
+
+
+.action-buttons .delete{
+
+background:
+
+linear-gradient(
+135deg,
+#dc2626,
+#ef4444
+);
+
+}
+
+<style>
+
+/* RESPONSIVE DESIGN */
+
+@media(max-width:900px){
+
+body{
+
+padding:20px;
+
+}
+
+
+.page-header{
+
+padding:30px;
+
+}
+
+
+.page-header h1{
+
+font-size:28px;
+
+}
+
+
+.main-card{
+
+padding:25px;
+
+}
+
+
+#createTransactionForm{
+
+padding:22px;
+
+}
+
+}
+
+
+
+@media(max-width:600px){
+
+body{
+
+padding:12px;
+
+}
+
+
+.page-header{
+
+border-radius:22px 22px 0 0;
+
+padding:25px;
+
+}
+
+
+.page-header h1{
+
+font-size:23px;
+
+}
+
+
+.page-header p{
+
+font-size:14px;
+
+}
+
+
+.main-card{
+
+padding:16px;
+
+border-radius:0 0 22px 22px;
+
+}
+
+
+.user-panel{
+
+padding:18px;
+
+border-radius:18px;
+
+}
+
+
+#createTransactionForm{
+
+padding:18px;
+
+border-radius:18px;
+
+}
+
+
+.form-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:12px;
+
+}
+
+
+.form-header h2{
+
+font-size:20px;
+
+}
+
+
+button{
+
+width:100%;
+
+}
+
+
+.action-buttons{
+
+flex-direction:column;
+
+}
+
+
+.action-buttons button{
+
+width:100%;
+
+}
+
+
+.history-title{
+
+font-size:22px;
+
+}
+
+}
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="page-container">
+
+
+<div class="page-header">
+
+
+<h1>
+Transaction Management Center
+</h1>
+
+
+<p>
+Create, update, and manage user financial transactions with a professional Firebase powered dashboard.
+</p>
+
+
+</div>
+
+
+
+<div class="main-card">
+
+
+
+<div class="user-panel">
+
+
+<div class="section-title">
+
+
+<div class="section-icon">
+👤
+</div>
+
+
+<span>
+Select User Account
+</span>
+
+
+</div>
+
+
+
+<div class="form-group">
+
+
+<label for="userDropdown">
+Choose User
+</label>
+
+
+<select id="userDropdown">
+
+
+<option value="">
+Loading users...
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+<div id="createTransactionForm" style="display:none;">
+
+
+
+<div class="form-header">
+
+
+<h2>
+Create / Modify Transaction
+</h2>
+
+
+<div class="badge">
+Financial Record
+</div>
+
+
+</div>
+
+
+
+<form id="createTransaction">
+
+
+
+<div class="form-group">
+
+
+<label for="transactionType">
+Transaction Type
+</label>
+
+
+<input
+
+type="text"
+
+id="transactionType"
+
+name="transactionType"
+
+placeholder="Enter transaction type"
+
+required
+
+>
+
+
+</div>
+
+
+
+
+<div class="form-group">
+
+
+<label for="transactionAmount">
+Amount
+</label>
+
+
+<input
+
+type="text"
+
+id="transactionAmount"
+
+name="transactionAmount"
+
+placeholder="Enter amount"
+
+required
+
+>
+
+
+</div>
+
+
+
+
+<div class="form-group">
+
+
+<label for="transactionStatus">
+Status
+</label>
+
+
+<input
+
+type="text"
+
+id="transactionStatus"
+
+name="transactionStatus"
+
+placeholder="Enter payment status"
+
+required
+
+>
+
+
+</div>
+
+
+
+
+<div class="form-group">
+
+
+<label for="transactionDate">
+Date Paid
+</label>
+
+
+<input
+
+type="text"
+
+id="transactionDate"
+
+name="transactionDate"
+
+placeholder="Enter payment date"
+
+required
+
+>
+
+
+</div>
+
+
+
+
+<button type="submit">
+
+Create Transaction
+
+</button>
+
+
+
+</form>
+
+
+</div>
+
+
+
+
+<div class="message" id="message"></div>
+
+
+<div class="error-message" id="errorMessage"></div>
+
+
+
+
+
+<div class="history-section">
+
+
+
+<div class="history-title">
+
+Transaction History
+
+</div>
+
+
+
+<div class="table-container">
+
+
+
+<table
+
+class="transaction-table"
+
+id="transactionHistoryTable">
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+Type
+</th>
+
+
+<th>
+Amount
+</th>
+
+
+<th>
+Status
+</th>
+
+
+<th>
+Date Paid
+</th>
+
+
+<th>
+Actions
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody id="transactionHistoryBody">
+
+
+<!-- Transactions loaded from Firebase -->
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<script>
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+
+authDomain: "scores-b25a7.firebaseapp.com",
+
+databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+
+projectId: "scores-b25a7",
+
+storageBucket: "scores-b25a7.appspot.com",
+
+messagingSenderId: "1001957936318",
+
+appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+
+
+let currentTransactionId = null;
+
+
+
+firebase.auth().onAuthStateChanged(function(user) {
+
+
+if (user) {
+
+
+const uid = user.uid;
+
+
+
+firebase.database().ref("users").once("value").then(snapshot => {
+
+
+const users = snapshot.val();
+
+
+const userDropdown = document.getElementById("userDropdown");
+
+
+userDropdown.innerHTML = '<option value="">Select a user</option>';
+
+
+
+for (const userId in users) {
+
+
+const user = users[userId];
+
+
+const option = document.createElement("option");
+
+
+option.value = userId;
+
+
+option.textContent = user.username || userId;
+
+
+userDropdown.appendChild(option);
+
+
+}
+
+
+});
+
+
+
+document.getElementById("userDropdown").addEventListener("change", function() {
+
+
+const selectedUserId = this.value;
+
+
+
+if(selectedUserId){
+
+
+document.getElementById("createTransactionForm").style.display="block";
+
+
+
+firebase.database()
+
+.ref("users/" + selectedUserId + "/transactions")
+
+.once("value")
+
+.then(snapshot=>{
+
+
+const transactions=snapshot.val();
+
+
+
+const transactionHistoryBody=document.getElementById("transactionHistoryBody");
+
+
+
+transactionHistoryBody.innerHTML="";
+
+
+
+if(transactions){
+
+
+let transactionHistoryHtml="";
+
+
+
+for(const transactionKey in transactions){
+
+
+const transaction=transactions[transactionKey];
+
+
+
+transactionHistoryHtml += `
+
+<tr data-transaction-id="${transactionKey}">
+
+
+<td>${transaction.type || "N/A"}</td>
+
+
+<td>$${parseFloat(transaction.amount).toFixed(2)}</td>
+
+
+<td>${transaction.status || "N/A"}</td>
+
+
+<td>${transaction.datePaid || "N/A"}</td>
+
+
+<td>
+
+<div class="action-buttons">
+
+
+<button class="edit"
+
+onclick="editTransaction('${selectedUserId}','${transactionKey}')">
+
+Edit
+
+</button>
+
+
+
+<button class="delete"
+
+onclick="deleteTransaction('${selectedUserId}','${transactionKey}')">
+
+Delete
+
+</button>
+
+
+</div>
+
+</td>
+
+
+</tr>
+
+`;
+
+}
+
+
+transactionHistoryBody.innerHTML=transactionHistoryHtml;
+
+
+
+}else{
+
+
+transactionHistoryBody.innerHTML=
+
+'<tr><td colspan="5">No transactions found.</td></tr>';
+
+}
+
+
+});
+
+
+}else{
+
+
+document.getElementById("createTransactionForm").style.display="none";
+
+
+}
+
+
+
+});
+
+
+
+// Handle transaction creation and update
+
+document.getElementById("createTransaction").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+
+const selectedUserId=document.getElementById("userDropdown").value;
+
+
+const type=document.getElementById("transactionType").value.trim();
+
+
+const amount=parseFloat(
+document.getElementById("transactionAmount").value.trim()
+);
+
+
+const status=document.getElementById("transactionStatus").value.trim();
+
+
+const datePaid=document.getElementById("transactionDate").value.trim();
+
+
+
+if(isNaN(amount)||amount<=0){
+
+alert("Please enter a valid amount.");
+
+return;
+
+}
+
+
+
+
+if(currentTransactionId){
+
+
+
+firebase.database()
+
+.ref("users/"+selectedUserId+"/transactions/"+currentTransactionId)
+
+.update({
+
+type:type,
+
+amount:amount,
+
+status:status,
+
+datePaid:datePaid
+
+})
+
+.then(()=>{
+
+
+document.getElementById("message").textContent=
+
+"Transaction updated successfully!";
+
+
+resetForm();
+
+
+})
+
+.catch((error)=>{
+
+
+document.getElementById("errorMessage").textContent=
+
+"Error updating transaction: "+error.message;
+
+
+});
+
+
+
+
+}else{
+
+
+
+const newTransactionRef = firebase.database()
+
+.ref("users/"+selectedUserId+"/transactions")
+
+.push();
+
+
+
+newTransactionRef.set({
+
+type:type,
+
+amount:amount,
+
+status:status,
+
+datePaid:datePaid
+
+})
+
+.then(()=>{
+
+
+document.getElementById("message").textContent=
+
+"Transaction created successfully!";
+
+
+resetForm();
+
+
+})
+
+.catch((error)=>{
+
+
+document.getElementById("errorMessage").textContent=
+
+"Error creating transaction: "+error.message;
+
+
+});
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+function resetForm(){
+
+
+currentTransactionId=null;
+
+
+document.getElementById("createTransaction").reset();
+
+
+
+const button=document.querySelector(
+"button[type='submit']"
+);
+
+
+button.textContent="Create Transaction";
+
+
+
+document.getElementById("userDropdown")
+
+.dispatchEvent(new Event("change"));
+
+
+
+}
+
+
+
+
+
+
+// Edit Transaction
+
+
+window.editTransaction=function(userId,transactionId){
+
+
+
+const transactionRef = firebase.database()
+
+.ref("users/"+userId+"/transactions/"+transactionId);
+
+
+
+transactionRef.once("value").then(snapshot=>{
+
+
+
+const transaction=snapshot.val();
+
+
+
+if(transaction){
+
+
+
+document.getElementById("transactionType").value=
+
+transaction.type || "";
+
+
+
+document.getElementById("transactionAmount").value=
+
+transaction.amount || "";
+
+
+
+document.getElementById("transactionStatus").value=
+
+transaction.status || "";
+
+
+
+document.getElementById("transactionDate").value=
+
+transaction.datePaid || "";
+
+
+
+
+
+currentTransactionId=transactionId;
+
+
+
+
+const createButton=document.querySelector(
+"button[type='submit']"
+);
+
+
+
+createButton.textContent="Update Transaction";
+
+
+
+}
+
+
+
+});
+
+
+
+};
+
+
+
+
+
+
+// Delete Transaction
+
+
+window.deleteTransaction=function(userId,transactionId){
+
+
+
+const transactionRef=firebase.database()
+
+.ref("users/"+userId+"/transactions/"+transactionId);
+
+
+
+
+transactionRef.remove()
+
+.then(()=>{
+
+
+
+document.getElementById("message").textContent=
+
+"Transaction deleted successfully!";
+
+
+
+
+document.getElementById("userDropdown")
+
+.dispatchEvent(new Event("change"));
+
+
+
+})
+
+.catch((error)=>{
+
+
+document.getElementById("errorMessage").textContent=
+
+"Error deleting transaction: "+error.message;
+
+
+});
+
+
+
+};
+
+
+
+}
+
+
+
+});
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

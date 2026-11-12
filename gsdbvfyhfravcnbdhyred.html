@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard - Manage Users</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+:root{
+--primary:#15317E;
+--primary2:#2d5dd7;
+--success:#22c55e;
+--danger:#dc2626;
+--warning:#f59e0b;
+--bg:#eef3fb;
+--card:#ffffff;
+--border:#dbe4f2;
+--text:#1f2937;
+}
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+background:linear-gradient(135deg,#edf4ff,#f7fbff,#eef3fb);
+padding:30px;
+color:var(--text);
+min-height:100vh;
+}
+
+.container{
+width:100%;
+max-width:650px;
+margin:0 auto 35px;
+background:#fff;
+padding:35px;
+border-radius:22px;
+box-shadow:0 20px 50px rgba(0,0,0,.08);
+border:1px solid rgba(255,255,255,.7);
+}
+
+h2{
+font-size:30px;
+font-weight:800;
+color:var(--primary);
+text-align:center;
+margin-bottom:25px;
+}
+
+hr{
+margin:40px 0;
+border:none;
+height:1px;
+background:#dce6f5;
+}
+
+.header{
+display:flex;
+justify-content:flex-end;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+height:54px;
+padding:0 18px;
+margin-bottom:16px;
+border:2px solid var(--border);
+border-radius:14px;
+font-size:15px;
+outline:none;
+transition:.3s;
+background:#fff;
+}
+
+input:focus{
+border-color:var(--primary);
+box-shadow:0 0 0 5px rgba(21,49,126,.12);
+}
+
+button{
+border:none;
+border-radius:12px;
+padding:12px 18px;
+cursor:pointer;
+font-size:14px;
+font-weight:700;
+background:linear-gradient(135deg,var(--primary),var(--primary2));
+color:#fff;
+transition:.3s;
+}
+
+.container button{
+width:100%;
+height:54px;
+font-size:15px;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 12px 25px rgba(0,0,0,.18);
+}
+
+button:active{
+transform:scale(.98);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#fff;
+border-radius:20px;
+overflow:hidden;
+box-shadow:0 20px 45px rgba(0,0,0,.08);
+}
+
+thead{
+background:linear-gradient(135deg,var(--primary),var(--primary2));
+}
+
+th{
+padding:18px;
+color:#fff;
+font-size:14px;
+font-weight:700;
+text-align:left;
+white-space:nowrap;
+}
+
+td{
+padding:16px;
+border-bottom:1px solid #edf2f7;
+vertical-align:top;
+}
+
+tbody tr:hover{
+background:#f8fbff;
+}
+
+td button{
+margin:4px;
+padding:10px 14px;
+font-size:13px;
+}
+
+td input{
+margin-bottom:10px;
+height:44px;
+font-size:14px;
+}
+
+@media(max-width:992px){
+
+body{
+padding:18px;
+}
+
+.container{
+padding:25px;
+}
+
+table{
+display:block;
+overflow-x:auto;
+white-space:nowrap;
+}
+
+}
+
+@media(max-width:768px){
+
+h2{
+font-size:24px;
+}
+
+.container{
+padding:20px;
+border-radius:18px;
+}
+
+.container button{
+height:50px;
+}
+
+table,
+thead,
+tbody,
+th,
+td,
+tr{
+display:block;
+}
+
+thead{
+display:none;
+}
+
+tr{
+background:#fff;
+margin-bottom:20px;
+border-radius:18px;
+padding:15px;
+box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+td{
+border:none;
+display:flex;
+flex-direction:column;
+padding:10px;
+}
+
+td::before{
+content:attr(data-label);
+font-weight:700;
+margin-bottom:8px;
+color:var(--primary);
+}
+
+td button{
+width:100%;
+margin:6px 0;
+}
+
+td input{
+width:100%;
+}
+
+.header{
+justify-content:center;
+}
+
+.header button{
+width:100%;
+}
+
+}
+
+@media(max-width:480px){
+
+body{
+padding:12px;
+}
+
+.container{
+padding:18px;
+}
+
+h2{
+font-size:21px;
+}
+
+input{
+height:48px;
+font-size:14px;
+}
+
+button{
+font-size:14px;
+}
+
+}
+</style>
+```
+</head>
+<body>
+
+  <!-- Create User Form -->
+  <div class="container">
+    <h2>Create New User</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password (min 6 characters)" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <input type="text" id="address" placeholder="Address" />
+    <input type="text" id="ein" placeholder="EIN Number" />
+    <input type="text" id="business" placeholder="Business Name" />
+    <input type="date" id="dob" placeholder="Date of Birth" />
+    <button onclick="createUser()">Create User</button>
+  </div>
+
+  <hr>
+
+  <!-- Admin Dashboard -->
+  <h2>Admin Dashboard</h2>
+  <div class="header">
+    <button onclick="window.location.href='explore.html'">Go to Explore</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th><th>Email</th><th>Phone</th><th>Business</th>
+        <th>Approve</th><th>Check</th><th>Confirmation</th><th>Approved Amount</th><th>Activate Account</th><th>Delete User</th>
+      </tr>
+    </thead>
+    <tbody id="userTable"></tbody>
+  </table>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+      authDomain: "scores-b25a7.firebaseapp.com",
+      databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+      projectId: "scores-b25a7",
+      storageBucket: "scores-b25a7.appspot.com",
+      messagingSenderId: "1001957936318",
+      appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef",
+      measurementId: "G-7FC8Q029F2"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Admin Dashboard User Table
+    const tableBody = document.getElementById("userTable");
+
+    firebase.database().ref("users").on("value", snapshot => {
+      tableBody.innerHTML = ""; // Clear table before reloading
+      snapshot.forEach(child => {
+        const user = child.val();
+        const uid = child.key;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td data-label="Name">${user.username}</td>
+          <td data-label="Email">${user.email}</td>
+          <td data-label="Phone">${user.phone}</td>
+          <td data-label="Business">${user.business}</td>
+          <td data-label="Approve">
+            <button onclick="setField('${uid}', 'approved', 'Yes')">Approve</button>
+            <button onclick="setField('${uid}', 'approved', 'No')">Reject</button>
+          </td>
+          <td data-label="Check">
+            <button onclick="setField('${uid}', 'checkStatus', 'Submitted')">Submit</button>
+            <button onclick="setField('${uid}', 'checkStatus', 'Not Submitted')">Reset</button>
+          </td>
+          <td data-label="Confirmation">
+            <button onclick="setField('${uid}', 'finalStatus', 'Confirmed')">Confirm</button>
+            <button onclick="setField('${uid}', 'finalStatus', 'Rejected')">Reject</button>
+          </td>
+          <td data-label="Approved Amount">
+            <input type="number" id="approvedAmount_${uid}" placeholder="Enter Amount" />
+            <button onclick="setApprovedAmount('${uid}')">Set Amount</button>
+          </td>
+          <td data-label="Activate Account">
+            <button onclick="activateAccount('${uid}')">Activate Account</button>
+          </td>
+          <td data-label="Delete User">
+            <button onclick="deleteUser('${uid}')">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    });
+
+    function setField(uid, field, value) {
+      firebase.database().ref("users/" + uid + "/" + field).set(value).then(() => {
+        alert(`${field} set to "${value}"`);
+      });
+    }
+
+    function setApprovedAmount(uid) {
+      const amount = document.getElementById(`approvedAmount_${uid}`).value;
+      if (amount) {
+        firebase.database().ref("users/" + uid + "/approvedAmount").set(amount).then(() => {
+          alert(`Approved amount set to ${amount}`);
+        });
+      } else {
+        alert("Please enter a valid amount.");
+      }
+    }
+
+    function activateAccount(uid) {
+      firebase.database().ref("users/" + uid + "/status").set("activated").then(() => {
+        window.location.href = "withdrawer.html?uid=" + uid;  // Redirect to Withdrawer page
+      });
+    }
+
+    function deleteUser(uid) {
+      const confirmation = confirm("Are you sure you want to delete this user?");
+      if (confirmation) {
+        firebase.database().ref("users/" + uid).remove().then(() => {
+          alert("User deleted successfully.");
+          window.location.reload();  // Refresh the page to reflect the changes
+        }).catch(error => {
+          alert("Error deleting user: " + error.message);
+        });
+      }
+    }
+
+    // Create User Functionality
+    function createUser() {
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const ein = document.getElementById("ein").value;
+      const business = document.getElementById("business").value;
+      const dob = document.getElementById("dob").value;
+
+      if (!email || !password || password.length < 6) {
+        alert("Please enter a valid email and a password with at least 6 characters.");
+        return;
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          return firebase.database().ref("users/" + uid).set({
+            username,
+            email,
+            phone,
+            address,
+            ein,
+            business,
+            date_of_birth: dob
+          });
+        })
+        .then(() => {
+          alert("User account created successfully!");
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>

